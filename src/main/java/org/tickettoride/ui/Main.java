@@ -1,13 +1,13 @@
 package org.tickettoride.ui;
 
-import game.Jogo;
-import model.CartaVagao;
-import model.Jogador;
-import model.Cor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import game.Jogo;
+import model.CartaVagao;
+import model.Jogador;
 
 /**
  *interagir com o usuário e delegar as ações para a classe Jogo (Controlador)
@@ -34,8 +34,10 @@ public class Main {
             exibirStatusCompleto(jogo);
 
             int escolha = apresentarOpcoes(jogadorAtual, scanner);
+            if(escolha == 5) break;
 
             processarEscolha(escolha, jogo, scanner);
+            
         }
 
         //4: fim de jogo
@@ -102,14 +104,15 @@ public class Main {
         System.out.println("2. Comprar carta de vagão aberta");
         System.out.println("3. Reivindicar uma rota (Funcionalidade para versão final)");
         System.out.println("4. Comprar bilhetes de destino (Funcionalidade para versão final)");
+        System.out.println("5. Sair (essa opção encerrará a partida prematuramente)");
 
         int escolha = -1;
-        while (escolha < 1 || escolha > 4) {
+        while (escolha < 1 || escolha > 5) {
             System.out.print("Sua escolha: ");
             try {
                 escolha = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Opção inválida. Digite um número de 1 a 4.");
+                System.out.println("Opção inválida. Digite um número de 1 a 5.");
             }
         }
         return escolha;
@@ -137,6 +140,9 @@ public class Main {
             case 4:
                 System.out.println("Ação 'Comprar Bilhetes de Destino' será implementada na próxima versão.");
                 break;
+            case 5:
+                System.out.println("Saindo...");
+                return;
             default:
                 System.out.println("Opção inválida.");
                 break;

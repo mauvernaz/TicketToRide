@@ -124,6 +124,33 @@ public class Jogo {
         System.out.println(jogador.getNome() + " - " + pontos + " pontos");
         }}
 
+    public void exibirVencedor(Jogo jogo){
+        List<Jogador> vencedores = new ArrayList<>();
+        int maiorPonto = Integer.MIN_VALUE;
+        for(Jogador jogador : jogadores){
+            if(jogador.getPontuacao() > maiorPonto){
+                vencedores.clear();
+                vencedores.add(jogador);
+                maiorPonto = jogador.getPontuacao();
+                
+            } else if(jogador.getPontuacao() == maiorPonto){
+                vencedores.add(jogador);
+            }
+        }
+
+        if(vencedores.size() == 1){
+            System.out.println("O vencedor é: " + vencedores.get(0).getNome() + " com " + maiorPonto);
+        } else {
+            System.out.println("Houve um empate entre: ");
+            for(Jogador j: vencedores){
+                System.out.println(j.getNome() + ",");
+
+            } 
+            System.out.println("Com " + maiorPonto + " pontos!");
+        }
+        }
+
+
     public Jogador getJogadorAtual() {
         return this.jogadores.get(this.jogadorAtualIndex);
     }

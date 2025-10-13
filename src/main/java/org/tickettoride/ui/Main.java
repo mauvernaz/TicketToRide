@@ -46,7 +46,7 @@ public class Main {
         System.out.println("=========================================");
         // a lógica de cálculo final e exibição do vencedor seria chamada aqui
         jogo.calcularPontuacaoFinal();
-        // exibirVencedor(jogo);
+        jogo.exibirVencedor(jogo);
 
         scanner.close();
     }
@@ -117,6 +117,8 @@ public class Main {
         }
         return escolha;
     }
+
+
 
     private static void processarEscolha(int escolha, Jogo jogo, Scanner scanner) {
         switch (escolha) {

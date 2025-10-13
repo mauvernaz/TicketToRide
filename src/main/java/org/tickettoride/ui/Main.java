@@ -45,7 +45,7 @@ public class Main {
         System.out.println("          FIM DE JOGO!          ");
         System.out.println("=========================================");
         // a lógica de cálculo final e exibição do vencedor seria chamada aqui
-        // jogo.calcularPontuacaoFinal();
+        jogo.calcularPontuacaoFinal();
         // exibirVencedor(jogo);
 
         scanner.close();

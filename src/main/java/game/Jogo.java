@@ -1,9 +1,12 @@
 package game;
 
-import model.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import model.CartaVagao;
+import model.Cor;
+import model.Jogador;
+import model.Rota;
 
 
 /**
@@ -109,9 +112,17 @@ public class Jogo {
         return false;
     }
 
-    private void calcularPontuacaoFinal() {
-
-    }
+    public void calcularPontuacaoFinal() {
+        for(Jogador jogador: jogadores){
+            int pontos = jogador.getPontuacao();
+            for(Rota rota : tabuleiro.getRota()){
+                if (rota.getDono() == jogador){
+                    pontos += rota.getPontos(); //SOMATÓRIO DE ROTAS
+                }
+            }
+        
+        System.out.println(jogador.getNome() + " - " + pontos + " pontos");
+        }}
 
     public Jogador getJogadorAtual() {
         return this.jogadores.get(this.jogadorAtualIndex);

@@ -9,7 +9,6 @@ public class DeckCartasDestino extends Deck<CartaDestino> {
     }
 
     public void devolverAoFundo(List<CartaDestino> cartas) {
-        // Adicionar no final da lista simula colocar no "fundo" do baralho.
         this.cartas.addAll(cartas);
     }
 }

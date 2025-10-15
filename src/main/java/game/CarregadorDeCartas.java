@@ -19,7 +19,7 @@ public class CarregadorDeCartas {
         List<CartaVagao> baralho = new ArrayList<>();
 
         // cores normais: 12 de cada
-        Cor[] coresNormais = {Cor.PRETO, Cor.AZUL, Cor.VERDE, Cor.VERMELHO, Cor.AMARELO, Cor.BRANCO, Cor.LARANJA, Cor.ROSA};
+        Cor[] coresNormais = {Cor.PRETO, Cor.AZUL, Cor.VERDE, Cor.VERMELHO, Cor.AMARELO};
         for (Cor cor : coresNormais) {
             for (int i = 0; i < 12; i++) {
                 baralho.add(new CartaVagao(cor));

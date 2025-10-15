@@ -6,9 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * gerencia as 5 cartas de vagão que ficam abertas na mesa
- */
+
 public class CartasAbertas {
     private final int NUMERO_DE_CARTAS = 5;
     private CartaVagao[] cartas;

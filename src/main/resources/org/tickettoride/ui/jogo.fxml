@@ -32,7 +32,7 @@
     <center>
         <AnchorPane fx:id="painelMapa" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ddd;" BorderPane.alignment="CENTER">
             <children>
-            <ImageView fx:id="mapa" fitHeight="529.0" fitWidth="1271.0" layoutX="291.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="rota_Seattle_Helena" fitHeight="529.0" fitWidth="1271.0" layoutX="291.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../images/mapa_ttr.jpg" />
                </image>
@@ -135,7 +135,7 @@
             <Rectangle fx:id="rota_Denver_Omaha" arcHeight="5.0" arcWidth="5.0" fill="#ff00aa" height="99.0" layoutX="648.0" layoutY="221.0" rotate="63.4" stroke="BLACK" strokeType="INSIDE" width="10.0" />
             <Rectangle fx:id="rota_Denver_OklahomaCity" arcHeight="5.0" arcWidth="5.0" fill="#fc0202" height="101.0" layoutX="642.0" layoutY="290.0" rotate="111.8" stroke="BLACK" strokeType="INSIDE" width="10.0" />
             <Rectangle fx:id="rota_ElPaso_Houston" arcHeight="5.0" arcWidth="5.0" fill="#02fa0c" height="152.0" layoutX="661.0" layoutY="389.0" rotate="95.2" stroke="BLACK" strokeType="INSIDE" width="18.0" />
-            <Rectangle fx:id="rota_Seattle_Cagalry" arcHeight="5.0" arcWidth="5.0" fill="#a1a1a1" height="100.0" layoutX="416.0" layoutY="67.0" rotate="63.4" stroke="BLACK" strokeType="INSIDE" width="26.0" />
+            <Rectangle fx:id="rota_Seattle_Calgary" arcHeight="5.0" arcWidth="5.0" fill="#a1a1a1" height="100.0" layoutX="416.0" layoutY="67.0" rotate="63.4" stroke="BLACK" strokeType="INSIDE" width="26.0" />
             <Rectangle fx:id="rota_Calgary_Winnipeg" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="160.0" layoutX="548.0" layoutY="-6.0" rotate="90.0" stroke="BLACK" strokeType="INSIDE" width="29.0" />
             <Rectangle fx:id="rota_NewOrleans_Miami" arcHeight="5.0" arcWidth="5.0" fill="#fc0202" height="108.0" layoutX="908.0" layoutY="384.0" rotate="104.0" stroke="BLACK" strokeType="INSIDE" width="26.0" />
 

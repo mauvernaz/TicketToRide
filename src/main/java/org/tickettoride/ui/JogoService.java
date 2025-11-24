@@ -46,7 +46,7 @@ public class JogoService {
 
     private void validaCliqueRota(MouseEvent event) {
         Rectangle visual = (Rectangle) event.getSource();
-        String id = visual.getId(); // ex: "rota_Vancouver_Seattle"
+        String id = visual.getId(); // ex: "rota_vancouver_seattle"
 
 
         String[] partes = parseIdParaObterCidades(id);

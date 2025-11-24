@@ -102,7 +102,7 @@ public class Jogo {
             jogador.decrementarVagoes(rota.getComprimento());
 
             iniciarProximoTurno();
-            return true; // Sucesso
+            return true;
         }
         return false;
     }

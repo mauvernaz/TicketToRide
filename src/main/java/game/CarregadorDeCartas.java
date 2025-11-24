@@ -55,17 +55,17 @@ public class CarregadorDeCartas {
         List<CartaDestino> baralho = new ArrayList<>();
 
         // Criação ou recuperação das cidades (para garantir consistência)
-        Cidade vancouver = getOuCriarCidade("Vancouver");
-        Cidade seattle = getOuCriarCidade("Seattle");
-        Cidade portland = getOuCriarCidade("Portland");
-        Cidade calgary = getOuCriarCidade("Calgary");
+        Cidade vancouver = getOuCriarCidade("vancouver");
+        Cidade seattle = getOuCriarCidade("seattle");
+        Cidade portland = getOuCriarCidade("portland");
+        Cidade calgary = getOuCriarCidade("calgary");
         Cidade saltLakeCity = getOuCriarCidade("Salt Lake City");
-        Cidade helena = getOuCriarCidade("Helena");
-        Cidade winnipeg = getOuCriarCidade("Winnipeg");
-        Cidade duluth = getOuCriarCidade("Duluth");
-        Cidade omaha = getOuCriarCidade("Omaha");
-        Cidade chicago = getOuCriarCidade("Chicago");
-        Cidade montreal = getOuCriarCidade("Montreal");
+        Cidade helena = getOuCriarCidade("helena");
+        Cidade winnipeg = getOuCriarCidade("winnipeg");
+        Cidade duluth = getOuCriarCidade("duluth");
+        Cidade omaha = getOuCriarCidade("omaha");
+        Cidade chicago = getOuCriarCidade("chicago");
+        Cidade montreal = getOuCriarCidade("montreal");
         Cidade newYork = getOuCriarCidade("New York");
         // ... adicione outras cidades conforme necessário
 

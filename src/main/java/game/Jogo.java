@@ -1,21 +1,16 @@
 package game;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import model.CartaVagao;
-import model.Cor;
-import model.Jogador;
-import model.Rota;
-
+import java.util.*;
+import model.*;
 
 /**
- *(GRASP - Controller)
+ * GRASP - Controller: Orquestra a lógica do jogo.
  */
 public class Jogo {
     private Tabuleiro tabuleiro;
     private List<Jogador> jogadores;
     private int jogadorAtualIndex;
+    private int cartasCompradasNoTurno = 0;
 
     private DeckCartasVagao deckVagao;
     private DescarteCartasVagao descarteVagao;
@@ -24,66 +19,80 @@ public class Jogo {
 
     public Jogo(List<String> nomesJogadores) {
         this.jogadores = new ArrayList<>();
-        for (String nome : nomesJogadores) {
-            this.jogadores.add(new Jogador(nome, Cor.VERMELHO));
+        // Define cores diferentes para cada jogador
+        Cor[] coresDisponiveis = {Cor.VERMELHO, Cor.AZUL, Cor.AMARELO, Cor.VERDE, Cor.PRETO};
+        for (int i = 0; i < nomesJogadores.size(); i++) {
+            this.jogadores.add(new Jogador(nomesJogadores.get(i), coresDisponiveis[i % coresDisponiveis.length]));
         }
         setupInicial();
     }
 
     private void setupInicial() {
-
+        CarregadorDeCartas carregador = new CarregadorDeCartas();
         this.tabuleiro = new Tabuleiro("mapa/america.txt");
 
-
-        List<CartaVagao> todasCartasVagao = CarregadorDeCartas.criarBaralhoCompletoVagao();
+        List<CartaVagao> todasCartasVagao = carregador.criarBaralhoCompletoVagao();
         this.deckVagao = new DeckCartasVagao(todasCartasVagao);
         this.deckVagao.embaralhar();
 
         this.descarteVagao = new DescarteCartasVagao();
-
         this.cartasAbertas = new CartasAbertas(this.deckVagao);
 
+        List<CartaDestino> todasCartasDestino = carregador.criarBaralhoDestino();
+        this.deckDestino = new DeckCartasDestino(todasCartasDestino);
+        this.deckDestino.embaralhar();
+
+        // Distribuição inicial
         for (Jogador jogador : jogadores) {
             for (int i = 0; i < 4; i++) {
-                jogador.adicionarCartaNaMao(deckVagao.comprar());
+                if(!deckVagao.estaVazio()) jogador.adicionarCartaNaMao(deckVagao.comprar());
             }
-
+            // Simulação: Jogador pega 3 objetivos iniciais
+            for(int i=0; i<3; i++) if(!deckDestino.estaVazio()) jogador.adicionarObjetivos(List.of(deckDestino.comprar()));
         }
-
         this.jogadorAtualIndex = 0;
     }
 
+    // --- Lógica de Ações ---
+
     public void executarAcaoComprarCartaDeck() {
+        if (this.cartasCompradasNoTurno >= 2) return;
+        if (deckVagao.estaVazio()) deckVagao.reabastecer(descarteVagao.pegarTodasAsCartas());
+        if (deckVagao.estaVazio()) return;
 
-        Jogador jogador = getJogadorAtual();
-
-        if(deckVagao.estaVazio()){
-            deckVagao.reabastecer(descarteVagao.pegarTodasAsCartas());
-        }
-
-        CartaVagao cartaComprada = deckVagao.comprar();
-        if (cartaComprada != null) {
-            jogador.adicionarCartaNaMao(cartaComprada);
-        }
-
-        iniciarProximoTurno();
+        getJogadorAtual().adicionarCartaNaMao(deckVagao.comprar());
+        this.cartasCompradasNoTurno++;
+        if (this.cartasCompradasNoTurno == 2) iniciarProximoTurno();
     }
 
     public void executarAcaoComprarCartaAberta(int indice) {
-        Jogador jogador = getJogadorAtual();
+        if (this.cartasCompradasNoTurno >= 2) return;
+
+        CartaVagao cartaAlvo = cartasAbertas.getCartas().get(indice);
+        if (cartaAlvo == null) return;
+
+        boolean isLocomotiva = (cartaAlvo.getCor() == Cor.CORINGA);
+        if (isLocomotiva && this.cartasCompradasNoTurno > 0) return; // Regra da Locomotiva
+
         CartaVagao cartaComprada = cartasAbertas.pegar(indice);
-
         if (cartaComprada != null) {
-            jogador.adicionarCartaNaMao(cartaComprada);
+            getJogadorAtual().adicionarCartaNaMao(cartaComprada);
             cartasAbertas.repor(indice, deckVagao);
-        }
 
-        iniciarProximoTurno();
+            if (isLocomotiva) {
+                this.cartasCompradasNoTurno = 2; // Locomotiva vale por 2
+                iniciarProximoTurno();
+            } else {
+                this.cartasCompradasNoTurno++;
+                if (this.cartasCompradasNoTurno == 2) iniciarProximoTurno();
+            }
+        }
     }
 
-    public void executarAcaoReivindicar(Rota rota, List<CartaVagao> pagamento) {
-        Jogador jogador = getJogadorAtual();
+    public boolean executarAcaoReivindicar(Rota rota, List<CartaVagao> pagamento) {
+        if (this.cartasCompradasNoTurno > 0) return false;
 
+        Jogador jogador = getJogadorAtual();
         if (jogador.podeReivindicarRota(rota, pagamento)) {
             jogador.removerCartasDaMao(pagamento);
             descarteVagao.adicionar(pagamento);
@@ -93,73 +102,77 @@ public class Jogo {
             jogador.decrementarVagoes(rota.getComprimento());
 
             iniciarProximoTurno();
-        } else {
-            System.out.println("Jogada inválida!");
-        }
-    }
-
-    private void iniciarProximoTurno() {
-        this.jogadorAtualIndex = (this.jogadorAtualIndex + 1) % this.jogadores.size();
-        System.out.println("Próximo turno: " + getJogadorAtual().getNome());
-    }
-
-    public boolean checarCondicaoFim() {
-        for (Jogador jogador : jogadores) {
-            if (jogador.getEstoqueVagoes() <= 2) {
-                return true;
-            }
+            return true;
         }
         return false;
     }
 
-    public void calcularPontuacaoFinal() {
-        for(Jogador jogador: jogadores){
-            int pontos = jogador.getPontuacao();
-            for(Rota rota : tabuleiro.getRota()){
-                if (rota.getDono() == jogador){
-                    pontos += rota.getPontos(); //SOMATÓRIO DE ROTAS
+    private void iniciarProximoTurno() {
+        this.cartasCompradasNoTurno = 0;
+        this.jogadorAtualIndex = (this.jogadorAtualIndex + 1) % this.jogadores.size();
+    }
+
+    public boolean checarCondicaoFim() {
+        for (Jogador j : jogadores) if (j.getEstoqueVagoes() <= 2) return true;
+        return false;
+    }
+
+    public void calcularPontuacoesFinais() {
+        for (Jogador jogador : jogadores) {
+            // Para cada objetivo do jogador...
+            for (CartaDestino bilhete : jogador.getMaoDeDestino()) {
+                // Usa o algoritmo BFS do Tabuleiro para checar se completou
+                boolean completou = tabuleiro.checarConectividade(
+                        jogador,
+                        bilhete.getOrigem(),
+                        bilhete.getDestino()
+                );
+
+                if (completou) {
+                    jogador.adicionarPontos(bilhete.getValor());
+                } else {
+                    jogador.adicionarPontos(-bilhete.getValor()); // Penalidade
                 }
             }
-        
-        System.out.println(jogador.getNome() + " - " + pontos + " pontos");
-        }}
+        }
+    }
 
-    public void exibirVencedor(Jogo jogo){
+    /**
+     * Retorna uma lista com o(s) vencedor(es) (em caso de empate).
+     * A UI usará isso para mostrar a mensagem.
+     */
+    public List<Jogador> getVencedores() {
+        calcularPontuacoesFinais(); // Garante que os pontos de destino foram somados
+
         List<Jogador> vencedores = new ArrayList<>();
-        int maiorPonto = Integer.MIN_VALUE;
-        for(Jogador jogador : jogadores){
-            if(jogador.getPontuacao() > maiorPonto){
+        int maiorPontuacao = Integer.MIN_VALUE;
+
+        for (Jogador j : jogadores) {
+            if (j.getPontuacao() > maiorPontuacao) {
+                maiorPontuacao = j.getPontuacao();
                 vencedores.clear();
-                vencedores.add(jogador);
-                maiorPonto = jogador.getPontuacao();
-                
-            } else if(jogador.getPontuacao() == maiorPonto){
-                vencedores.add(jogador);
+                vencedores.add(j);
+            } else if (j.getPontuacao() == maiorPontuacao) {
+                vencedores.add(j);
             }
         }
+        return vencedores;
+    }
 
-        if(vencedores.size() == 1){
-            System.out.println("O vencedor é: " + vencedores.get(0).getNome() + " com " + maiorPonto);
-        } else {
-            System.out.println("Houve um empate entre: ");
-            for(Jogador j: vencedores){
-                System.out.println(j.getNome() + ",");
-
-            } 
-            System.out.println("Com " + maiorPonto + " pontos!");
+    // Método auxiliar para saber se o jogo acabou oficialmente
+    public boolean isFimDeJogo() {
+        // A regra oficial é: quando alguém tem 2 ou menos vagões,
+        // todos jogam mais um turno. Para simplificar a versão acadêmica:
+        // Acaba assim que alguém tiver 2 ou menos.
+        for (Jogador j : jogadores) {
+            if (j.getEstoqueVagoes() <= 2) return true;
         }
-        }
-
-
-    public Jogador getJogadorAtual() {
-        return this.jogadores.get(this.jogadorAtualIndex);
+        return false;
     }
 
-    public List<CartaVagao> getCartasAbertas() {
-        return this.cartasAbertas.getCartas();
-    }
-
-    public Tabuleiro getTabuleiro() {
-        return this.tabuleiro;
-    }
+    // --- GETTERS NECESSÁRIOS PARA UI ---
+    public Jogador getJogadorAtual() { return this.jogadores.get(this.jogadorAtualIndex); }
+    public List<CartaVagao> getCartasAbertas() { return this.cartasAbertas.getCartas(); }
+    public Tabuleiro getTabuleiro() { return this.tabuleiro; }
+    public int getCartasCompradasNoTurno() { return cartasCompradasNoTurno; }
 }

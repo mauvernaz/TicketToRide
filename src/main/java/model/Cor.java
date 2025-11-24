@@ -6,9 +6,9 @@ public enum Cor {
     VERDE,
     AMARELO,
     PRETO,
-    BRANCO,
-    LARANJA,
+    BRANCO,   // Adicionado
+    LARANJA,  // Adicionado
     ROSA,
-    CINZA,    // para rotas que aceitam qualquer cor
-    CORINGA   // para as cartas de Locomotiva
+    CORINGA,// para as cartas de Locomotiva
+    CINZA //pra rota apenas
 }

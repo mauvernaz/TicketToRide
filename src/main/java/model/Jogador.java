@@ -87,4 +87,8 @@ public class Jogador {
     public int getEstoqueVagoes() { return estoqueVagoes; }
     public List<CartaVagao> getMaoDeCartas() { return Collections.unmodifiableList(maoDeCartas); }
     public List<CartaDestino> getMaoDeDestino() { return Collections.unmodifiableList(maoDeDestino); }
+
+    public Cor getCorMarcador() {
+        return this.corMarcador;
+    }
 }

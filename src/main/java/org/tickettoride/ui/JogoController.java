@@ -27,6 +27,7 @@ public class JogoController {
     @FXML private Label labelVagoes;
     @FXML private HBox hboxMesa;
     @FXML private HBox hboxMaoJogador;
+    @FXML private ListView<String> listaDestinos;
 
     @FXML
     public void initialize() {
@@ -185,12 +186,32 @@ public class JogoController {
         renderizarMesa();
         renderizarMao(atual);
 
+        renderizarObjetivos(atual);
+
         if (jogo.isFimDeJogo()) {
             encerrarPartida();
         }
 
         if (jogo.isFimDeJogo()) {
             mostrarTelaVencedor();
+        }
+    }
+
+    private void renderizarObjetivos(Jogador jogador) {
+        listaDestinos.getItems().clear();
+
+        if (jogador.getMaoDeDestino().isEmpty()) {
+            listaDestinos.getItems().add("Sem bilhetes!");
+            return;
+        }
+
+        for (model.CartaDestino carta : jogador.getMaoDeDestino()) {
+            String texto = String.format("%s -> %s\n(%d pontos)",
+                    carta.getOrigem().getNome(),
+                    carta.getDestino().getNome(),
+                    carta.getValor());
+
+            listaDestinos.getItems().add(texto);
         }
     }
 

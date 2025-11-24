@@ -21,17 +21,15 @@ public class Tabuleiro {
     }
 
     private void inicializarMapaHardcoded() {
-        // 1. Helper para garantir instância única das cidades
+
         Map<String, Cidade> cacheCidades = new HashMap<>();
 
-        // Função local para pegar ou criar cidade
+
         java.util.function.Function<String, Cidade> getCidade = (nome) -> {
             return cacheCidades.computeIfAbsent(nome, Cidade::new);
         };
 
-        // 2. Criação das Rotas (Mapeado do seu FXML + Regras Oficiais)
 
-        // --- COSTA OESTE / NORTE ---
         // Vancouver <-> Seattle (Dupla: Cinza/Cinza)
         rotas.add(new Rota(getCidade.apply("Vancouver"), getCidade.apply("Seattle"), 1, Cor.CINZA));
         rotas.add(new Rota(getCidade.apply("Vancouver"), getCidade.apply("Seattle"), 1, Cor.CINZA));
@@ -61,7 +59,6 @@ public class Tabuleiro {
         // Duluth <-> Toronto (Rosa)
         rotas.add(new Rota(getCidade.apply("Duluth"), getCidade.apply("Toronto"), 6, Cor.ROSA));
 
-        // --- MIDWEST / LESTE ---
         // Chicago <-> Pittsburgh (Dupla: Laranja/Preto)
         rotas.add(new Rota(getCidade.apply("Chicago"), getCidade.apply("Pittsburgh"), 3, Cor.LARANJA));
         rotas.add(new Rota(getCidade.apply("Chicago"), getCidade.apply("Pittsburgh"), 3, Cor.PRETO));
@@ -87,7 +84,6 @@ public class Tabuleiro {
         rotas.add(new Rota(getCidade.apply("San Francisco"), getCidade.apply("Salt Lake City"), 5, Cor.LARANJA));
         rotas.add(new Rota(getCidade.apply("San Francisco"), getCidade.apply("Salt Lake City"), 5, Cor.BRANCO));
 
-        // --- SUL ---
         // El Paso <-> Dallas (Vermelho)
         rotas.add(new Rota(getCidade.apply("El Paso"), getCidade.apply("Dallas"), 4, Cor.VERMELHO));
 
@@ -290,7 +286,6 @@ public class Tabuleiro {
         // New Orleans <-> Miami (Vermelho)
         rotas.add(new Rota(getCidade.apply("New Orleans"), getCidade.apply("Miami"), 6, Cor.VERMELHO));
 
-        // 3. Adicionar todas as cidades ao atributo da classe
         this.cidades.addAll(cacheCidades.values());
     }
 
@@ -312,7 +307,7 @@ public class Tabuleiro {
             for (Rota rota : rotas) {
                 if (jogador.equals(rota.getDono())) {
                     Cidade vizinho = null;
-                    // Lógica de grafo não-direcionado
+
                     if (rota.getCidadeA().equals(atual)) {
                         vizinho = rota.getCidadeB();
                     } else if (rota.getCidadeB().equals(atual)) {
@@ -329,26 +324,21 @@ public class Tabuleiro {
         return false;
     }
 
-    // Em Tabuleiro.java
 
-    /**
-     * Calcula o tamanho do maior caminho contínuo de um jogador.
-     * Problema NP-Hard (Longest Path), mas tratável aqui pelo tamanho pequeno do grafo.
-     */
     public int calcularMaiorCaminho(Jogador jogador) {
         int maxCaminho = 0;
-        // Filtra apenas as rotas desse jogador
+
         List<Rota> rotasDoJogador = rotas.stream()
                 .filter(r -> jogador.equals(r.getDono()))
                 .collect(Collectors.toList());
 
-        // Tenta iniciar um caminho a partir de cada rota que o jogador possui
+
         for (Rota inicio : rotasDoJogador) {
-            // Precisamos trackear as rotas visitadas para não repetir a MESMA aresta
+
             Set<Rota> visitadas = new HashSet<>();
             visitadas.add(inicio);
 
-            // Tenta ir para um lado (Cidade A) e para o outro (Cidade B)
+
             int caminhoA = dfsMaiorCaminho(inicio.getCidadeA(), visitadas, rotasDoJogador, inicio.getComprimento());
             int caminhoB = dfsMaiorCaminho(inicio.getCidadeB(), visitadas, rotasDoJogador, inicio.getComprimento());
 
@@ -362,13 +352,13 @@ public class Tabuleiro {
 
         for (Rota r : todasRotas) {
             if (!visitadas.contains(r)) {
-                // Verifica se a rota está conectada à cidade atual
+
                 Cidade proxima = null;
                 if (r.getCidadeA().equals(atual)) proxima = r.getCidadeB();
                 else if (r.getCidadeB().equals(atual)) proxima = r.getCidadeA();
 
                 if (proxima != null) {
-                    // Cria um novo set para o branch da recursão (backtracking implícito)
+
                     Set<Rota> novasVisitadas = new HashSet<>(visitadas);
                     novasVisitadas.add(r);
 
@@ -380,21 +370,18 @@ public class Tabuleiro {
         return maxLocal;
     }
 
-    /**
-     * Busca uma rota de forma robusta, ignorando espaços, case e caracteres especiais.
-     * Isso resolve o problema de IDs como "SaultStMarie" vs Cidade "Sault St. Marie".
-     */
+
     public Rota buscarRota(String nomeA_UI, String nomeB_UI) {
-        // Normaliza as strings da UI (remove espaços, pontos e põe em minúsculo)
+
         String chaveA = normalizarNome(nomeA_UI);
         String chaveB = normalizarNome(nomeB_UI);
 
         for (Rota r : rotas) {
-            // Normaliza os nomes reais do Backend para comparar
+
             String backendA = normalizarNome(r.getCidadeA().getNome());
             String backendB = normalizarNome(r.getCidadeB().getNome());
 
-            // Verifica a conexão (A-B ou B-A)
+
             boolean sentidoDireto = backendA.equals(chaveA) && backendB.equals(chaveB);
             boolean sentidoInverso = backendA.equals(chaveB) && backendB.equals(chaveA);
 
@@ -405,9 +392,7 @@ public class Tabuleiro {
         return null;
     }
 
-    /**
-     * Remove espaços, pontos e transforma em minúsculas para comparação segura.
-     */
+
     private String normalizarNome(String input) {
         if (input == null) return "";
         return input.toLowerCase()
@@ -416,7 +401,7 @@ public class Tabuleiro {
                 .replace("_", "");
     }
 
-    // Getters
+
     public List<Rota> getRotas() { return rotas; }
     public List<Cidade> getCidades() { return cidades; }
 }

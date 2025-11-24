@@ -118,20 +118,26 @@ public class Jogo {
     }
 
     public void calcularPontuacoesFinais() {
+        System.out.println("\n--- CÁLCULO FINAL DE PONTOS ---");
+
         for (Jogador jogador : jogadores) {
-            // Para cada objetivo do jogador...
+            System.out.println("Calculando para: " + jogador.getNome());
+
             for (CartaDestino bilhete : jogador.getMaoDeDestino()) {
-                // Usa o algoritmo BFS do Tabuleiro para checar se completou
+                // 1. Chama o BFS do Tabuleiro
                 boolean completou = tabuleiro.checarConectividade(
                         jogador,
                         bilhete.getOrigem(),
                         bilhete.getDestino()
                 );
 
+                // 2. Aplica a pontuação
                 if (completou) {
+                    System.out.println("  [SUCESSO] " + bilhete.getOrigem().getNome() + " -> " + bilhete.getDestino().getNome() + " (+" + bilhete.getValor() + ")");
                     jogador.adicionarPontos(bilhete.getValor());
                 } else {
-                    jogador.adicionarPontos(-bilhete.getValor()); // Penalidade
+                    System.out.println("  [FALHA]   " + bilhete.getOrigem().getNome() + " -> " + bilhete.getDestino().getNome() + " (-" + bilhete.getValor() + ")");
+                    jogador.adicionarPontos(-bilhete.getValor()); // Penalidade!
                 }
             }
         }
@@ -142,11 +148,35 @@ public class Jogo {
      * A UI usará isso para mostrar a mensagem.
      */
     public List<Jogador> getVencedores() {
-        calcularPontuacoesFinais(); // Garante que os pontos de destino foram somados
+        calcularPontuacoesFinais(); // Bilhetes
+
+        // --- CÁLCULO DO BÔNUS DE MAIOR ROTA (+10) ---
+        int maxRotaGlobal = 0;
+        List<Jogador> ganhadoresBonus = new ArrayList<>();
+
+        for (Jogador j : jogadores) {
+            int maiorCaminho = tabuleiro.calcularMaiorCaminho(j);
+            System.out.println("Maior caminho de " + j.getNome() + ": " + maiorCaminho);
+
+            if (maiorCaminho > maxRotaGlobal) {
+                maxRotaGlobal = maiorCaminho;
+                ganhadoresBonus.clear();
+                ganhadoresBonus.add(j);
+            } else if (maiorCaminho == maxRotaGlobal && maxRotaGlobal > 0) {
+                ganhadoresBonus.add(j);
+            }
+        }
+
+        // Aplica os 10 pontos
+        for (Jogador j : ganhadoresBonus) {
+            System.out.println("BÔNUS! " + j.getNome() + " ganhou +10 pontos pela maior rota.");
+            j.adicionarPontos(10);
+        }
+        // ---------------------------------------------
 
         List<Jogador> vencedores = new ArrayList<>();
+        // ... (resto da lógica de achar o maior score que já existia) ...
         int maiorPontuacao = Integer.MIN_VALUE;
-
         for (Jogador j : jogadores) {
             if (j.getPontuacao() > maiorPontuacao) {
                 maiorPontuacao = j.getPontuacao();
@@ -156,6 +186,7 @@ public class Jogo {
                 vencedores.add(j);
             }
         }
+
         return vencedores;
     }
 
@@ -168,6 +199,35 @@ public class Jogo {
             if (j.getEstoqueVagoes() <= 2) return true;
         }
         return false;
+    }
+
+    // Em Jogo.java
+
+    /**
+     * Passo 1: Pega 3 cartas do baralho para mostrar ao jogador.
+     */
+    public List<CartaDestino> comprarNovosObjetivosCandidatos() {
+        // Validação de turno
+        if (this.cartasCompradasNoTurno > 0) return null;
+
+        List<CartaDestino> candidatos = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (!deckDestino.estaVazio()) {
+                candidatos.add(deckDestino.comprar());
+            }
+        }
+        return candidatos;
+    }
+
+    /**
+     * Passo 2: Recebe a decisão do jogador e finaliza o turno.
+     */
+    public void confirmarEscolhaObjetivos(List<CartaDestino> manter, List<CartaDestino> devolver) {
+        getJogadorAtual().adicionarObjetivos(manter);
+        deckDestino.devolverAoFundo(devolver);
+
+        // Essa ação consome o turno inteiro
+        iniciarProximoTurno();
     }
 
     // --- GETTERS NECESSÁRIOS PARA UI ---

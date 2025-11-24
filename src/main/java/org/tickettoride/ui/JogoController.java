@@ -1,10 +1,7 @@
 package org.tickettoride.ui;
 
 import game.Jogo;
-import model.CartaVagao;
-import model.Cor;
-import model.Jogador;
-import model.Rota;
+import model.*;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -189,21 +186,136 @@ public class JogoController {
         renderizarMao(atual);
 
         if (jogo.isFimDeJogo()) {
+            encerrarPartida();
+        }
+
+        if (jogo.isFimDeJogo()) {
             mostrarTelaVencedor();
         }
     }
 
-    private void renderizarMesa() {
-        hboxMesa.getChildren().clear();
-        Button btnDeck = new Button("Deck");
-        btnDeck.setOnAction(e -> { jogo.executarAcaoComprarCartaDeck(); atualizarUI(); });
-        hboxMesa.getChildren().add(btnDeck);
+    private void encerrarPartida() {
+        // 1. Calcula os pontos finais (Bilhetes)
+        jogo.calcularPontuacoesFinais();
 
-        for(int i=0; i<jogo.getCartasAbertas().size(); i++) {
-            final int idx = i;
+        // 2. Pega os vencedores
+        List<Jogador> vencedores = jogo.getVencedores();
+
+        // 3. Monta a mensagem
+        StringBuilder msg = new StringBuilder();
+        msg.append("O jogo acabou!\n\nRanking Final:\n");
+
+        // Ordena jogadores por pontuação para exibir ranking bonito
+        // (Assumindo que jogo.getJogadores() existe, senão use a lógica interna)
+        // Aqui vou usar a lista de vencedores apenas como exemplo simples:
+
+        if (vencedores.size() == 1) {
+            msg.append("VENCEDOR: ").append(vencedores.get(0).getNome());
+            msg.append(" com ").append(vencedores.get(0).getPontuacao()).append(" pontos!");
+        } else {
+            msg.append("EMPATE entre: ");
+            for(Jogador j : vencedores) msg.append(j.getNome()).append(", ");
+            msg.append("com ").append(vencedores.get(0).getPontuacao()).append(" pontos!");
+        }
+
+        // 4. Exibe Alert e Fecha
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Fim de Jogo");
+        alert.setHeaderText("Resultado Final");
+        alert.setContentText(msg.toString());
+        alert.showAndWait();
+
+        System.exit(0); // Fecha a aplicação
+    }
+
+    private void renderizarMesa() {
+        // 1. Limpa a área da mesa para redesenhar do zero
+        hboxMesa.getChildren().clear();
+
+        // 2. Cria o Botão do Deck de Vagões
+        Button btnDeckVagoes = new Button("Vagões");
+        btnDeckVagoes.setOnAction(e -> {
+            jogo.executarAcaoComprarCartaDeck();
+            atualizarUI();
+        });
+
+        // 3. Cria o Botão do Deck de Destinos (NOVO)
+        Button btnDeckDestinos = new Button("Novos Destinos");
+        btnDeckDestinos.setOnAction(e -> onComprarDestinosClick());
+
+        // 4. Adiciona OS DOIS botões na HBox
+        hboxMesa.getChildren().addAll(btnDeckVagoes, btnDeckDestinos);
+
+        // 5. Cria e adiciona as imagens das Cartas Abertas
+        for(int i = 0; i < jogo.getCartasAbertas().size(); i++) {
+            final int idx = i; // Necessário para o lambda
             ImageView img = criarImageView(jogo.getCartasAbertas().get(i));
-            img.setOnMouseClicked(e -> { jogo.executarAcaoComprarCartaAberta(idx); atualizarUI(); });
+
+            // Evento de clique na carta aberta
+            img.setOnMouseClicked(e -> {
+                jogo.executarAcaoComprarCartaAberta(idx);
+                atualizarUI();
+            });
+
             hboxMesa.getChildren().add(img);
+        }
+    }
+
+    private void onComprarDestinosClick() {
+        // 1. Busca as cartas no backend
+        List<CartaDestino> candidatos = jogo.comprarNovosObjetivosCandidatos();
+
+        if (candidatos == null) {
+            mostrarAlerta("Ação Inválida", "Você não pode comprar objetivos agora (já jogou ou baralho vazio).");
+            return;
+        }
+
+        // 2. Cria um texto para mostrar as opções
+        StringBuilder opcoes = new StringBuilder("Digite os números dos bilhetes que deseja MANTER (separados por vírgula):\n");
+        for (int i = 0; i < candidatos.size(); i++) {
+            CartaDestino c = candidatos.get(i);
+            opcoes.append(i).append(": ").append(c.getOrigem().getNome())
+                    .append(" -> ").append(c.getDestino().getNome())
+                    .append(" (").append(c.getValor()).append(" pts)\n");
+        }
+        opcoes.append("\nRegra: Você deve manter pelo menos 1.");
+
+        // 3. Usa um TextInputDialog para pegar a resposta
+        TextInputDialog dialog = new TextInputDialog("0"); // Valor padrão: mantém o primeiro
+        dialog.setTitle("Novos Objetivos");
+        dialog.setHeaderText("Escolha seus Bilhetes");
+        dialog.setContentText(opcoes.toString());
+
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            try {
+                // Processa a string "0, 2" para índices
+                String[] escolhas = result.get().split(",");
+                List<CartaDestino> manter = new ArrayList<>();
+                List<CartaDestino> devolver = new ArrayList<>(candidatos); // Começa com todos para remover depois
+
+                for (String s : escolhas) {
+                    int idx = Integer.parseInt(s.trim());
+                    if (idx >= 0 && idx < candidatos.size()) {
+                        manter.add(candidatos.get(idx));
+                    }
+                }
+
+                if (manter.isEmpty()) {
+                    mostrarAlerta("Erro", "Você deve manter pelo menos um bilhete!");
+                    // Numa versão real, devolveria as cartas ao fundo se cancelasse,
+                    // mas aqui vamos assumir cancelamento da ação.
+                    jogo.confirmarEscolhaObjetivos(List.of(candidatos.get(0)), candidatos.subList(1, candidatos.size())); // Força ficar com 1
+                } else {
+                    devolver.removeAll(manter); // O que sobrou vai pro fundo
+                    jogo.confirmarEscolhaObjetivos(manter, devolver);
+                    atualizarUI();
+                }
+
+            } catch (Exception e) {
+                mostrarAlerta("Erro", "Entrada inválida. Tente novamente.");
+            }
         }
     }
 

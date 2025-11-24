@@ -329,6 +329,57 @@ public class Tabuleiro {
         return false;
     }
 
+    // Em Tabuleiro.java
+
+    /**
+     * Calcula o tamanho do maior caminho contínuo de um jogador.
+     * Problema NP-Hard (Longest Path), mas tratável aqui pelo tamanho pequeno do grafo.
+     */
+    public int calcularMaiorCaminho(Jogador jogador) {
+        int maxCaminho = 0;
+        // Filtra apenas as rotas desse jogador
+        List<Rota> rotasDoJogador = rotas.stream()
+                .filter(r -> jogador.equals(r.getDono()))
+                .collect(Collectors.toList());
+
+        // Tenta iniciar um caminho a partir de cada rota que o jogador possui
+        for (Rota inicio : rotasDoJogador) {
+            // Precisamos trackear as rotas visitadas para não repetir a MESMA aresta
+            Set<Rota> visitadas = new HashSet<>();
+            visitadas.add(inicio);
+
+            // Tenta ir para um lado (Cidade A) e para o outro (Cidade B)
+            int caminhoA = dfsMaiorCaminho(inicio.getCidadeA(), visitadas, rotasDoJogador, inicio.getComprimento());
+            int caminhoB = dfsMaiorCaminho(inicio.getCidadeB(), visitadas, rotasDoJogador, inicio.getComprimento());
+
+            maxCaminho = Math.max(maxCaminho, Math.max(caminhoA, caminhoB));
+        }
+        return maxCaminho;
+    }
+
+    private int dfsMaiorCaminho(Cidade atual, Set<Rota> visitadas, List<Rota> todasRotas, int comprimentoAtual) {
+        int maxLocal = comprimentoAtual;
+
+        for (Rota r : todasRotas) {
+            if (!visitadas.contains(r)) {
+                // Verifica se a rota está conectada à cidade atual
+                Cidade proxima = null;
+                if (r.getCidadeA().equals(atual)) proxima = r.getCidadeB();
+                else if (r.getCidadeB().equals(atual)) proxima = r.getCidadeA();
+
+                if (proxima != null) {
+                    // Cria um novo set para o branch da recursão (backtracking implícito)
+                    Set<Rota> novasVisitadas = new HashSet<>(visitadas);
+                    novasVisitadas.add(r);
+
+                    int profundidade = dfsMaiorCaminho(proxima, novasVisitadas, todasRotas, comprimentoAtual + r.getComprimento());
+                    maxLocal = Math.max(maxLocal, profundidade);
+                }
+            }
+        }
+        return maxLocal;
+    }
+
     /**
      * Busca uma rota de forma robusta, ignorando espaços, case e caracteres especiais.
      * Isso resolve o problema de IDs como "SaultStMarie" vs Cidade "Sault St. Marie".

@@ -7,10 +7,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
-import model.CartaVagao;
-import model.Cor;
-import model.Jogador;
-import model.Rota;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -160,4 +157,6 @@ public class JogoService {
         // Retorna a lista se conseguiu o total, senão retorna null
         return (selecionadas.size() == custo) ? selecionadas : null;
     }
+
+
 }

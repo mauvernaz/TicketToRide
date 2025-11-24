@@ -2,11 +2,10 @@ package org.tickettoride.ui;
 
 import game.Jogo;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
 
@@ -19,6 +18,9 @@ public class JogoController {
 
 
     private Jogo jogo;
+
+    @FXML
+    private VBox vboxCartasObjetivo;
 
     @FXML
     private AnchorPane painelMapa; // Onde ficam o Mapa e os Retângulos
@@ -57,6 +59,7 @@ public class JogoController {
                                 .comVagoes(labelVagoes)
                                 .comMesa(hboxMesa)
                                 .comMao(hboxMaoJogador)
+                                .comCartasDestinos(vboxCartasObjetivo)
                                 .build();
 
         this.jogoService = new JogoService(this.jogo, this.uiService);

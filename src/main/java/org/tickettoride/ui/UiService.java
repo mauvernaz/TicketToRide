@@ -26,13 +26,60 @@ public class UiService {
     private final HBox hboxMesa;
     private final HBox hboxMao;
 
-    public UiService(Jogo jogo, Label nomeJogador, Label pontuacao, Label vagoes, HBox mesa, HBox hboxMao, JogoService jogoService){
-        this.jogo = jogo;
-        this.nomeJogador = nomeJogador;
-        this.pontuacao = pontuacao;
-        this.vagoes = vagoes;
-        this.hboxMesa = mesa;
-        this.hboxMao = hboxMao;
+    private UiService(Builder builder) {
+        this.jogo = builder.jogo;
+        this.nomeJogador = builder.nomeJogador;
+        this.pontuacao = builder.pontuacao;
+        this.vagoes = builder.vagoes;
+        this.hboxMesa = builder.hboxMesa;
+        this.hboxMao = builder.hboxMao;
+    }
+
+    public static class Builder {
+        private Jogo jogo;
+        private Label nomeJogador;
+        private Label pontuacao;
+        private Label vagoes;
+        private HBox hboxMesa;
+        private HBox hboxMao;
+
+
+        public Builder() {}
+
+
+        public Builder comJogo(Jogo jogo) {
+            this.jogo = jogo;
+            return this;
+        }
+
+        public Builder comNomeJogador(Label nomeJogador) {
+            this.nomeJogador = nomeJogador;
+            return this;
+        }
+
+        public Builder comPontuacao(Label pontuacao) {
+            this.pontuacao = pontuacao;
+            return this;
+        }
+
+        public Builder comVagoes(Label vagoes) {
+            this.vagoes = vagoes;
+            return this;
+        }
+
+        public Builder comMesa(HBox mesa) {
+            this.hboxMesa = mesa;
+            return this;
+        }
+
+        public Builder comMao(HBox mao) {
+            this.hboxMao = mao;
+            return this;
+        }
+
+        public UiService build() {
+            return new UiService(this);
+        }
     }
 
     private void atualizaMesaEMao(Jogador jogador){

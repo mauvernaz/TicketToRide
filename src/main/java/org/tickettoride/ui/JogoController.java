@@ -46,13 +46,21 @@ public class JogoController {
     @FXML
     public void initialize() {
         List<String> nomes = List.of("Jogador 1", "Jogador 2");
-        // GoF Builder
+
         this.jogo = new Jogo(nomes);
-        this.uiService = new UiService(jogo, labelNomeJogador, labelPontuacao, labelVagoes, hboxMesa, hboxMaoJogador, jogoService);
+
+        // GoF Builder
+        this.uiService = new UiService.Builder()
+                                .comJogo(jogo)
+                                .comNomeJogador(labelNomeJogador)
+                                .comPontuacao(labelPontuacao)
+                                .comVagoes(labelVagoes)
+                                .comMesa(hboxMesa)
+                                .comMao(hboxMaoJogador)
+                                .build();
+
         this.jogoService = new JogoService(this.jogo, this.uiService);
-
-
-        jogoService.adicionaEventoEmRetangulosDeRota(this.painelMapa); // Configuração dinâmica das rotas
+        jogoService.adicionaEventoEmRetangulosDeRota(this.painelMapa);
         uiService.atualizaUI();
     }
 }

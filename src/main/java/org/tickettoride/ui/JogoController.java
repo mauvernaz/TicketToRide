@@ -121,35 +121,59 @@ public class JogoController {
     /**
      * Algoritmo simples para encontrar cartas válidas na mão do jogador.
      */
+    /**
+     * Algoritmo robusto para selecionar cartas automaticamente.
+     * Resolve o problema das rotas Cinzas.
+     */
     private List<CartaVagao> calcularPagamentoAutomatico(Jogador j, Rota r) {
         List<CartaVagao> mao = j.getMaoDeCartas();
-        List<CartaVagao> selecionadas = new ArrayList<>();
-        int necessario = r.getComprimento();
-        Cor corAlvo = r.getCor();
+        int custo = r.getComprimento();
+        Cor corRota = r.getCor();
 
-        // 1. Tenta pegar cartas da cor exata
+        // CASO 1: Rota com Cor Específica (Não Cinza)
+        if (corRota != Cor.CINZA) {
+            return tentarPagarComCor(mao, corRota, custo);
+        }
+
+        // CASO 2: Rota Cinza (Tenta achar qualquer cor que satisfaça o custo)
+        // Testa todas as cores possíveis (exceto Cinza e Coringa)
+        for (Cor corTeste : Cor.values()) {
+            if (corTeste != Cor.CINZA && corTeste != Cor.CORINGA) {
+                List<CartaVagao> tentativa = tentarPagarComCor(mao, corTeste, custo);
+                if (tentativa != null) {
+                    return tentativa; // Achou uma cor que serve!
+                }
+            }
+        }
+
+        return null; // Não tem cartas suficientes em nenhuma cor
+    }
+
+    /**
+     * Helper: Tenta formar um pagamento de tamanho 'custo' usando 'corAlvo' + Coringas.
+     */
+    private List<CartaVagao> tentarPagarComCor(List<CartaVagao> mao, Cor corAlvo, int custo) {
+        List<CartaVagao> selecionadas = new ArrayList<>();
+
+        // 1. Pega cartas da cor exata
         for (CartaVagao c : mao) {
-            if (selecionadas.size() == necessario) break;
-            if (corAlvo != Cor.CINZA && c.getCor() == corAlvo) {
+            if (c.getCor() == corAlvo && selecionadas.size() < custo) {
                 selecionadas.add(c);
             }
         }
 
-        // 2. Se for rota cinza, escolhe a cor que o jogador tem mais (lógica simplificada: pega a primeira que achar)
-        if (corAlvo == Cor.CINZA && selecionadas.isEmpty()) {
-            // Lógica simplificada: pega as primeiras X cartas da mesma cor que encontrar
-            // (Implementação completa exigiria agrupar por cor e ver qual tem mais)
-        }
-
-        // 3. Completa com Coringas (Locomotivas)
-        for (CartaVagao c : mao) {
-            if (selecionadas.size() == necessario) break;
-            if (c.getCor() == Cor.CORINGA) {
-                if (!selecionadas.contains(c)) selecionadas.add(c);
+        // 2. Se ainda falta, completa com Coringas
+        if (selecionadas.size() < custo) {
+            for (CartaVagao c : mao) {
+                if (c.getCor() == Cor.CORINGA && !selecionadas.contains(c)) {
+                    selecionadas.add(c);
+                    if (selecionadas.size() == custo) break;
+                }
             }
         }
 
-        return (selecionadas.size() == necessario) ? selecionadas : null;
+        // Retorna a lista se conseguiu o total, senão retorna null
+        return (selecionadas.size() == custo) ? selecionadas : null;
     }
 
     // --- Métodos de UI (atualizarUI, criarImageView) mantidos da versão anterior ---

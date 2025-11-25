@@ -54,32 +54,70 @@ public class CarregadorDeCartas {
     public List<CartaDestino> criarBaralhoDestino() {
         List<CartaDestino> baralho = new ArrayList<>();
 
-        // Criação ou recuperação das cidades (para garantir consistência)
-        Cidade vancouver = getOuCriarCidade("vancouver");
-        Cidade seattle = getOuCriarCidade("seattle");
-        Cidade portland = getOuCriarCidade("portland");
-        Cidade calgary = getOuCriarCidade("calgary");
-        Cidade saltLakeCity = getOuCriarCidade("Salt Lake City");
-        Cidade helena = getOuCriarCidade("helena");
-        Cidade winnipeg = getOuCriarCidade("winnipeg");
-        Cidade duluth = getOuCriarCidade("duluth");
-        Cidade omaha = getOuCriarCidade("omaha");
-        Cidade chicago = getOuCriarCidade("chicago");
-        Cidade montreal = getOuCriarCidade("montreal");
-        Cidade newYork = getOuCriarCidade("New York");
-        // ... adicione outras cidades conforme necessário
+        Cidade vancouver = getOuCriarCidade(String.valueOf(Cidades.VANCOUVER));
+        Cidade seattle = getOuCriarCidade(String.valueOf(Cidades.SEATTLE));
+        Cidade portland = getOuCriarCidade(String.valueOf(Cidades.PORTLAND));
+        Cidade calgary = getOuCriarCidade(String.valueOf(Cidades.CALGARY));
+        Cidade saltLakeCity = getOuCriarCidade(String.valueOf(Cidades.SALT_LAKE_CITY));
+        Cidade helena = getOuCriarCidade(String.valueOf(Cidades.HELENA));
+        Cidade winnipeg = getOuCriarCidade(String.valueOf(Cidades.WINNIPEG));
+        Cidade duluth = getOuCriarCidade(String.valueOf(Cidades.DULUTH));
+        Cidade omaha = getOuCriarCidade(String.valueOf(Cidades.OMAHA));
+        Cidade chicago = getOuCriarCidade(String.valueOf(Cidades.CHICAGO));
+        Cidade montreal = getOuCriarCidade(String.valueOf(Cidades.MONTREAL));
+        Cidade newYork = getOuCriarCidade(String.valueOf(Cidades.NEW_YORK));
+        Cidade boston = getOuCriarCidade(String.valueOf(Cidades.BOSTON));
+        Cidade dallas = getOuCriarCidade(String.valueOf(Cidades.DALLAS));
+        Cidade kansasCity = getOuCriarCidade(String.valueOf(Cidades.KANSAS_CITY));
+        Cidade miami = getOuCriarCidade(String.valueOf(Cidades.MIAMI));
+        Cidade phoenix = getOuCriarCidade(String.valueOf(Cidades.PHOENIX));
+        Cidade newOrleans = getOuCriarCidade(String.valueOf(Cidades.NEW_ORLEANS));
+        Cidade santaFe = getOuCriarCidade(String.valueOf(Cidades.SANTA_FE));
+        Cidade elPaso = getOuCriarCidade(String.valueOf(Cidades.EL_PASO));
+        Cidade pittsburgh = getOuCriarCidade(String.valueOf(Cidades.PITTSBURGH));
+        Cidade houston = getOuCriarCidade(String.valueOf(Cidades.HOUSTON));
+        Cidade losAngeles = getOuCriarCidade(String.valueOf(Cidades.LOS_ANGELES));
+        Cidade atlanta = getOuCriarCidade(String.valueOf(Cidades.ATLANTA));
+        Cidade nashville = getOuCriarCidade(String.valueOf(Cidades.NASHVILLE));
+        Cidade sanFrancisco = getOuCriarCidade(String.valueOf(Cidades.SAN_FRANCISCO));
+        Cidade saultStMarie = getOuCriarCidade(String.valueOf(Cidades.SAULT_ST_MARIE));
+        Cidade oklahomaCity = getOuCriarCidade(String.valueOf(Cidades.OKLAHOMA_CITY));
+        Cidade toronto = getOuCriarCidade(String.valueOf(Cidades.TORONTO));
+        Cidade littleRock = getOuCriarCidade(String.valueOf(Cidades.LITTLE_ROCK));
+        Cidade denver = getOuCriarCidade(String.valueOf(Cidades.DENVER));
 
-        // Criação dos Bilhetes (Exemplos baseados no jogo real)
-        baralho.add(new CartaDestino(vancouver, montreal, 20));
-        baralho.add(new CartaDestino(seattle, newYork, 22));
-        baralho.add(new CartaDestino(portland, chicago, 17));
-        baralho.add(new CartaDestino(vancouver, saltLakeCity, 7));
+
+
+        baralho.add(new CartaDestino(boston, miami, 12));
+        baralho.add(new CartaDestino(calgary, phoenix, 13));
         baralho.add(new CartaDestino(calgary, saltLakeCity, 7));
-        baralho.add(new CartaDestino(helena, winnipeg, 4));
-        baralho.add(new CartaDestino(seattle, portland, 1)); // Rota curta para teste fácil
-        baralho.add(new CartaDestino(duluth, omaha, 6));
-
-        // Adicione mais bilhetes para ter variedade
+        baralho.add(new CartaDestino(chicago, newOrleans, 7));
+        baralho.add(new CartaDestino(chicago, santaFe, 9));
+        baralho.add(new CartaDestino(dallas, newYork, 11));
+        baralho.add(new CartaDestino(denver, elPaso, 4));
+        baralho.add(new CartaDestino(denver, pittsburgh, 11));
+        baralho.add(new CartaDestino(duluth, elPaso, 10));
+        baralho.add(new CartaDestino(duluth, houston, 8));
+        baralho.add(new CartaDestino(helena, losAngeles, 8));
+        baralho.add(new CartaDestino(kansasCity, houston, 5));
+        baralho.add(new CartaDestino(losAngeles, chicago, 16));
+        baralho.add(new CartaDestino(losAngeles, miami, 20));
+        baralho.add(new CartaDestino(losAngeles, newYork, 21));
+        baralho.add(new CartaDestino(montreal, atlanta, 9));
+        baralho.add(new CartaDestino(montreal, newOrleans, 13));
+        baralho.add(new CartaDestino(newYork, atlanta, 6));
+        baralho.add(new CartaDestino(portland, nashville, 17));
+        baralho.add(new CartaDestino(portland, phoenix, 11));
+        baralho.add(new CartaDestino(sanFrancisco, atlanta, 17));
+        baralho.add(new CartaDestino(saultStMarie, nashville, 8));
+        baralho.add(new CartaDestino(saultStMarie, oklahomaCity, 9));
+        baralho.add(new CartaDestino(seattle, losAngeles, 9));
+        baralho.add(new CartaDestino(seattle, newYork, 22));
+        baralho.add(new CartaDestino(toronto, miami, 10));
+        baralho.add(new CartaDestino(vancouver, montreal, 20));
+        baralho.add(new CartaDestino(vancouver, santaFe, 13));
+        baralho.add(new CartaDestino(winnipeg, houston, 12));
+        baralho.add(new CartaDestino(winnipeg, littleRock, 11));
 
         return baralho;
     }

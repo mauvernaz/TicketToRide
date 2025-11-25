@@ -1,6 +1,6 @@
 package org.tickettoride.ui;
 
-import game.Jogo;
+import game.JogoController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -11,13 +11,14 @@ import java.util.List;
 
 
 /**
-    Lógica de negócio da interface. Integração com Front em alto nível.
+     GRASP: Controller
+     Lógica de negócio da interface do Jogo. Integração com Front em alto nível.
     Atributos e métodos com o decorator @FXML interagem diretamente com o front (org/tickettoride/ui/jogo.fxml)
  */
-public class JogoController {
+public class JogoUIController {
 
 
-    private Jogo jogo;
+    private JogoController jogoController;
 
     @FXML
     private VBox vboxCartasObjetivo;
@@ -42,18 +43,18 @@ public class JogoController {
 
     private UiService uiService;
 
-    private JogoService jogoService;
+    private JogoUIService jogoUIService;
 
 
     @FXML
     public void initialize() {
         List<String> nomes = List.of("Jogador 1", "Jogador 2");
 
-        this.jogo = new Jogo(nomes);
+        this.jogoController = new JogoController(nomes);
 
         // GoF Builder
         this.uiService = new UiService.Builder()
-                                .comJogo(jogo)
+                                .comJogo(jogoController)
                                 .comNomeJogador(labelNomeJogador)
                                 .comPontuacao(labelPontuacao)
                                 .comVagoes(labelVagoes)
@@ -62,8 +63,8 @@ public class JogoController {
                                 .comCartasDestinos(vboxCartasObjetivo)
                                 .build();
 
-        this.jogoService = new JogoService(this.jogo, this.uiService);
-        jogoService.adicionaEventoEmRetangulosDeRota(this.painelMapa);
+        this.jogoUIService = new JogoUIService(this.jogoController, this.uiService);
+        jogoUIService.adicionaEventoEmRetangulosDeRota(this.painelMapa);
         uiService.atualizaUI();
     }
 }

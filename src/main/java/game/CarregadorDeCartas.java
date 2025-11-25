@@ -24,7 +24,7 @@ public class CarregadorDeCartas {
     /**
      * Cria a lista completa de cartas de vagão.
      */
-    public List<CartaVagao> criarBaralhoCompletoVagao() {
+    public List<CartaVagao> criarBaralhoCartasVagao() {
         List<CartaVagao> baralho = new ArrayList<>();
 
         // Todas as 8 cores do jogo padrão

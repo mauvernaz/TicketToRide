@@ -1,6 +1,6 @@
 package model;
 
-public class CartaVagao extends Carta {
+public class CartaVagao implements Carta {
     private final Cor cor;
 
     public CartaVagao(Cor cor) {

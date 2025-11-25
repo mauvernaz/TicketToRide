@@ -4,59 +4,75 @@ import model.Cidade;
 import model.Jogador;
 import model.Rota;
 import model.Cor;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Tabuleiro {
+    private static Tabuleiro single;
     private List<Cidade> cidades;
     private List<Rota> rotas;
 
-    /**
-     * GRASP - Creator
-     */
-    public Tabuleiro(String arquivoDoMapa) {
+    private Tabuleiro(String arquivoDoMapa) {
         this.cidades = new ArrayList<>();
         this.rotas = new ArrayList<>();
         inicializacaoHardcode();
     }
 
+    /**
+     * GoF Singleton
+     * @param s
+     * @return
+     */
+    public static Tabuleiro getInstance(String s) {
+        if (single == null){
+            single = new Tabuleiro(s);
+        }
+        return single;
+    }
+
+    public static Tabuleiro getInstance() {
+        return single;
+    }
+
     private void inicializacaoHardcode() {
         // Cidades
-        Cidade vancouver = new Cidade("Vancouver");
-        Cidade atlanta = new Cidade("Atlanta");
-        Cidade seattle = new Cidade("Seattle");
-        Cidade calgary = new Cidade("Calgary");
-        Cidade portland = new Cidade("Portland");
-        Cidade boston = new Cidade("Boston");
-        Cidade charleston = new Cidade("Charleston");
-        Cidade miami = new Cidade("Miami");
-        Cidade newOrleans = new Cidade("NewOrleans");
-        Cidade newYork = new Cidade("NewYork");
-        Cidade chicago = new Cidade("Chicago");
-        Cidade pittsburgh = new Cidade("Pittsburgh");
-        Cidade helena = new Cidade("Helena");
-        Cidade winnipeg = new Cidade("Winnipeg");
-        Cidade dallas = new Cidade("Dallas");
-        Cidade saintLouis = new Cidade("SaintLouis");
-        Cidade toronto = new Cidade("Toronto");
-        Cidade houston = new Cidade("Houston");
-        Cidade denver = new Cidade("Denver");
-        Cidade kansasCity = new Cidade("KansasCity");
-        Cidade oklahomaCity = new Cidade("OklahomaCity");
-        Cidade omaha = new Cidade("Omaha");
-        Cidade phoenix = new Cidade("Phoenix");
-        Cidade duluth = new Cidade("Duluth");
-        Cidade elPaso = new Cidade("ElPaso");
-        Cidade santaFe = new Cidade("SantaFe");
-        Cidade saultStMarie = new Cidade("SaultStMarie");
-        Cidade littleRock = new Cidade("LittleRock");
-        Cidade saltLakeCity = new Cidade("SaltLakeCity");
-        Cidade losAngeles = new Cidade("LosAngeles");
-        Cidade montreal = new Cidade("Montreal");
-        Cidade nashville = new Cidade("Nashville");
-        Cidade washington = new Cidade("Washington");
-        Cidade lasVegas = new Cidade("LasVegas");
-        Cidade raleigh = new Cidade("Raleigh");
-        Cidade sanFrancisco = new Cidade("SanFrancisco");
+        Cidade vancouver = new Cidade("vancouver");
+        Cidade atlanta = new Cidade("atlanta");
+        Cidade seattle = new Cidade("seattle");
+        Cidade calgary = new Cidade("calgary");
+        Cidade portland = new Cidade("portland");
+        Cidade boston = new Cidade("boston");
+        Cidade charleston = new Cidade("charleston");
+        Cidade miami = new Cidade("miami");
+        Cidade newOrleans = new Cidade("newOrleans");
+        Cidade newYork = new Cidade("newYork");
+        Cidade chicago = new Cidade("chicago");
+        Cidade pittsburgh = new Cidade("pittsburgh");
+        Cidade helena = new Cidade("helena");
+        Cidade winnipeg = new Cidade("winnipeg");
+        Cidade dallas = new Cidade("dallas");
+        Cidade saintLouis = new Cidade("saintLouis");
+        Cidade toronto = new Cidade("toronto");
+        Cidade houston = new Cidade("houston");
+        Cidade denver = new Cidade("denver");
+        Cidade kansasCity = new Cidade("kansasCity");
+        Cidade oklahomaCity = new Cidade("oklahomaCity");
+        Cidade omaha = new Cidade("omaha");
+        Cidade phoenix = new Cidade("phoenix");
+        Cidade duluth = new Cidade("duluth");
+        Cidade elPaso = new Cidade("elPaso");
+        Cidade santaFe = new Cidade("santaFe");
+        Cidade saultStMarie = new Cidade("saultStMarie");
+        Cidade littleRock = new Cidade("littleRock");
+        Cidade saltLakeCity = new Cidade("saltLakeCity");
+        Cidade losAngeles = new Cidade("losAngeles");
+        Cidade montreal = new Cidade("montreal");
+        Cidade nashville = new Cidade("nashville");
+        Cidade washington = new Cidade("washington");
+        Cidade lasVegas = new Cidade("lasVegas");
+        Cidade raleigh = new Cidade("raleigh");
+        Cidade sanFrancisco = new Cidade("sanFrancisco");
 
         // Cidades
         cidades.addAll(List.of(oklahomaCity, omaha, phoenix, duluth, elPaso,
@@ -201,18 +217,36 @@ public class Tabuleiro {
         return false;
     }
 
-    public Rota buscarRota(String nomeA, String nomeB) {
-        for (Rota r : rotas) {
-            boolean matchA = r.getCidadeA().getNome().equalsIgnoreCase(nomeA);
-            boolean matchB = r.getCidadeB().getNome().equalsIgnoreCase(nomeB);
+    private boolean validarSeCidadeXEstaNaRota(Rota r, String nomeCidade, boolean aOuB){
+        if (aOuB){
+            return r.getCidadeA().getNome().equalsIgnoreCase(nomeCidade);
+        }
+        return r.getCidadeB().getNome().equalsIgnoreCase(nomeCidade);
+    }
 
-            if (((matchA && r.getCidadeB().getNome().equalsIgnoreCase(nomeB)) ||
-                    (r.getCidadeA().getNome().equalsIgnoreCase(nomeB) && matchB)) &&
-                    r.getDono() == null) {
-                return r;
+    private boolean validarSeCidadeAEstaNaRota(Rota r, String nomeCidade){
+        return validarSeCidadeXEstaNaRota(r, nomeCidade, true);
+    }
+
+    private boolean validarSeCidadeBEstaNaRota(Rota r, String nomeCidade){
+        return validarSeCidadeXEstaNaRota(r, nomeCidade, false);
+    }
+
+    public List<Rota> buscarRotaNasRotas(String nomeA, String nomeB) {
+        List<Rota> rotasEncontradas = new ArrayList<>();
+
+        List<String> rotaBuscada = Arrays.asList(nomeA, nomeB);
+        Collections.sort(rotaBuscada);
+
+        for (Rota r : rotas) {
+            List<String> rotaEncontrada = Arrays.asList(r.getCidadeA().getNome(), r.getCidadeB().getNome());
+            Collections.sort(rotaEncontrada);
+
+            if (rotaBuscada.equals(rotaEncontrada)) {
+                rotasEncontradas.add(r);
             }
         }
-        return null;
+        return rotasEncontradas;
     }
 
     // Getters

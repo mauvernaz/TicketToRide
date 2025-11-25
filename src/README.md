@@ -1,6 +1,6 @@
 # Ticket to Ride (Versão Normal)
 
-Implementação digital do  jogo de tabuleiro **Ticket to Ride (Mapa USA)**, desenvolvida utilizando JavaFX, para matéria de Projeto de Software.
+Implementação digital do  jogoController de tabuleiro **Ticket to Ride (Mapa USA)**, desenvolvida utilizando JavaFX, para matéria de Projeto de Software.
 
 ## 🛠️ Tecnologias Utilizadas
 

@@ -1,6 +1,7 @@
 package org.tickettoride.ui;
 
-import game.Jogo;
+import game.JogoController;
+import game.JogoService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,12 +18,14 @@ import javafx.scene.text.FontWeight;
 import model.CartaDestino;
 import model.CartaVagao;
 import model.Jogador;
+import model.Jogadores;
+
 import java.util.List;
 import java.util.Objects;
 
 // --- Métodos de UI (atualizarUI, criarImageView) mantidos da versão anterior ---
 public class UiService {
-    private final Jogo jogo;
+    private final JogoController jogoController;
     private final Label nomeJogador;
     private final Label pontuacao;
     private final Label vagoes;
@@ -31,7 +34,7 @@ public class UiService {
     private final VBox vboxCartasDestino;
 
     private UiService(Builder builder) {
-        this.jogo = builder.jogo;
+        this.jogoController = builder.jogoController;
         this.nomeJogador = builder.nomeJogador;
         this.pontuacao = builder.pontuacao;
         this.vagoes = builder.vagoes;
@@ -41,7 +44,7 @@ public class UiService {
     }
 
     public static class Builder {
-        private Jogo jogo;
+        private JogoController jogoController;
         private Label nomeJogador;
         private Label pontuacao;
         private Label vagoes;
@@ -58,8 +61,8 @@ public class UiService {
             return this;
         }
 
-        public Builder comJogo(Jogo jogo) {
-            this.jogo = jogo;
+        public Builder comJogo(JogoController jogoController) {
+            this.jogoController = jogoController;
             return this;
         }
 
@@ -102,7 +105,7 @@ public class UiService {
      * Helper que converte a Cor do modelo para a cor do JavaFX
      */
     public void atualizarVisualRota(Rectangle visual) {
-        switch (this.jogo.getJogadorAtual().getCorMarcador()) {
+        switch (JogoService.getJogadorAtual().getCorMarcador()) {
             case AZUL -> visual.setFill(Color.BLUE);
             case VERMELHO -> visual.setFill(Color.RED);
             case VERDE -> visual.setFill(Color.GREEN);
@@ -114,7 +117,7 @@ public class UiService {
     }
 
     public void atualizaUI() {
-        Jogador jogadorAtual = jogo.getJogadorAtual();
+        Jogador jogadorAtual = JogoService.getJogadorAtual();
         this.nomeJogador.setText(jogadorAtual.getNome());
         this.pontuacao.setText(String.valueOf(jogadorAtual.getPontuacao()));
         this.vagoes.setText(String.valueOf(jogadorAtual.getEstoqueVagoes()));
@@ -123,21 +126,30 @@ public class UiService {
 
         atualizaMesaEMao(jogadorAtual);
 
-        if (jogo.isFimDeJogo()) {
+        if (isFimDeJogo()) {
             mostrarTelaVencedor();
         }
     }
 
+    public boolean isFimDeJogo() {
+        // A regra oficial é: quando alguém tem 2 ou menos vagões,
+        // todos jogam mais um turno. Para simplificar a versão acadêmica:
+        // Acaba assim que alguém tiver 2 ou menos.
+        for (Jogador j : Jogadores.getJogadores().getListaJogadores()) {
+            if (j.getEstoqueVagoes() <= 2) return true;
+        }
+        return false;
+    }
     private void renderizarMesa() {
         this.hboxMesa.getChildren().clear();
         Button btnDeck = new Button("Deck");
-        btnDeck.setOnAction(e -> { jogo.executarAcaoComprarCartaDeck(); atualizaUI(); });
+        btnDeck.setOnAction(e -> { JogoService.executarAcaoComprarCartaDeck(); atualizaUI(); });
         this.hboxMesa.getChildren().add(btnDeck);
 
-        for(int i=0; i<jogo.getCartasAbertas().size(); i++) {
+        for(int i = 0; i< jogoController.getCartasAbertas().size(); i++) {
             final int idx = i;
-            ImageView img = criarImageView(jogo.getCartasAbertas().get(i));
-            img.setOnMouseClicked(e -> { jogo.executarAcaoComprarCartaAberta(idx); atualizaUI(); });
+            ImageView img = criarImageView(jogoController.getCartasAbertas().get(i));
+            img.setOnMouseClicked(e -> { JogoService.executarAcaoComprarCartaAberta(idx); atualizaUI(); });
             this.hboxMesa.getChildren().add(img);
         }
     }
@@ -159,7 +171,7 @@ public class UiService {
     }
 
     private void mostrarTelaVencedor() {
-        List<Jogador> vencedores = jogo.getVencedores();
+        List<Jogador> vencedores = JogoService.getVencedores();
 
         StringBuilder msg = new StringBuilder();
         if (vencedores.size() == 1) {
@@ -170,9 +182,7 @@ public class UiService {
         }
 
         msg.append("\n\nPlacar Final:\n");
-        // Precisamos de acesso à lista de todos os jogadores para mostrar o ranking
-        // (Você pode adicionar um getJogadores() na classe Jogo se não tiver)
-        // Aqui assumo que vamos apenas parabenizar o vencedor.
+
         msg.append("Pontuação: ").append(vencedores.get(0).getPontuacao());
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -180,10 +190,8 @@ public class UiService {
         alert.setHeaderText("Temos um magnata ferroviário!");
         alert.setContentText(msg.toString());
 
-        // Bloqueia a interação até fechar o alerta
         alert.showAndWait();
 
-        // Fecha o jogo ou reinicia (System.exit(0) fecha tudo)
         System.exit(0);
     }
 
@@ -247,7 +255,7 @@ public class UiService {
     }
 
     public void carregarCartasDestinoIniciaisNaUI() {
-        List<CartaDestino> listaDeCartasDestino = jogo.getJogadorAtual().getMaoDeDestino();
+        List<CartaDestino> listaDeCartasDestino = JogoService.getJogadorAtual().getMaoDeDestino();
 
         limparCartasObjetivo();
 

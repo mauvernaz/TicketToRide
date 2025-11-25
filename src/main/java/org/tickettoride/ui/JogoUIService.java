@@ -1,6 +1,8 @@
 package org.tickettoride.ui;
 
-import game.Jogo;
+import game.JogoController;
+import game.JogoService;
+import game.Tabuleiro;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -15,12 +17,12 @@ import java.util.Optional;
 
 import static org.tickettoride.ui.Utils.mostrarAlerta;
 
-public class JogoService {
-    private final Jogo jogo;
+public class JogoUIService {
+    private final JogoController jogoController;
     private final UiService uiService;
 
-    public JogoService(Jogo jogo, UiService uiService){
-        this.jogo = jogo;
+    public JogoUIService(JogoController jogoController, UiService uiService){
+        this.jogoController = jogoController;
         this.uiService = uiService;
     }
 
@@ -49,15 +51,17 @@ public class JogoService {
         String[] partes = parseIdParaObterCidades(id);
         if (partes == null) return;
 
-        Rota rota = getRotaNoBackend(partes, id);
-        if (rota == null) return;
+        List<Rota> rotas = Tabuleiro.getInstance().buscarRotaNasRotas(partes[1], partes[2]);
+        if (rotas.isEmpty()) return;
 
-        if (podeReivindicarRota(rota, visual)){
-            uiService.atualizarVisualRota(visual);
-            uiService.atualizaUI();
-        } else{
-            mostrarAlerta("Cartas Insuficientes", "Você precisa de " + rota.getComprimento() + " cartas da cor " + rota.getCor());
-        };
+        for(Rota rota : rotas) {
+            if (podeReivindicarRota(rota, visual)) {
+                uiService.atualizarVisualRota(visual);
+                uiService.atualizaUI();
+                return;
+            }
+        }
+        mostrarAlerta("Cartas Insuficientes", "Você precisa de " + rotas.get(0).getComprimento() + " cartas da cor " + rotas.get(0).getCor());
     }
 
     private static String[] parseIdParaObterCidades(String id) {
@@ -66,22 +70,8 @@ public class JogoService {
         return partes;
     }
 
-    private Rota getRotaNoBackend(String[] partes, String id) {
-        Rota rota = this.jogo.getTabuleiro().buscarRota(partes[1], partes[2]);
-        if (rota == null) {
-            mostrarAlerta("Erro", "Rota não configurada no backend: " + id);
-            return null;
-        }
-
-        if (rota.getDono() != null) {
-            mostrarAlerta("Ocupada", "Esta rota já tem dono!");
-            return null;
-        }
-        return rota;
-    }
-
     private boolean podeReivindicarRota(Rota rota, Rectangle visual) {
-        Jogador jogador = this.jogo.getJogadorAtual();
+        Jogador jogador = JogoService.getJogadorAtual();
 
         // Algoritmo Guloso para selecionar cartas automaticamente da mão
         List<CartaVagao> pagamento = calcularPagamentoAutomatico(jogador, rota);
@@ -94,7 +84,7 @@ public class JogoService {
 
             Optional<ButtonType> result = confirm.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                return jogo.executarAcaoReivindicar(rota, pagamento);
+                return JogoService.executarAcaoReivindicar(rota, pagamento);
             }
         }
         return false;

@@ -1,6 +1,6 @@
 package org.tickettoride.ui;
 
-import game.Jogo;
+import game.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -9,15 +9,17 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
+import static game.JogoService.inicializarJogadores;
+
 
 /**
-    Lógica de negócio da interface. Integração com Front em alto nível.
-    Atributos e métodos com o decorator @FXML interagem diretamente com o front (org/tickettoride/ui/jogo.fxml)
+     GRASP: Controller
+     Lógica de negócio da interface do Jogo. Integração Back-Front em alto nível.
+     Atributos e métodos com o decorator @FXML interagem diretamente com o front (org/tickettoride/ui/jogo.fxml)
  */
-public class JogoController {
+public class JogoUIController {
 
 
-    private Jogo jogo;
 
     @FXML
     private VBox vboxCartasObjetivo;
@@ -42,18 +44,21 @@ public class JogoController {
 
     private UiService uiService;
 
-    private JogoService jogoService;
+    private JogoUIService jogoUIService;
 
 
     @FXML
     public void initialize() {
+        Tabuleiro.getInstance("mapa/america.txt");
+        DeckCartasVagao.inicializarCartasEmbaralhadas();
+        CartasAbertas.getInstance();
+
         List<String> nomes = List.of("Jogador 1", "Jogador 2");
+        inicializarJogadores(nomes);
 
-        this.jogo = new Jogo(nomes);
+        JogoService.setJogadorAtual(0);
 
-        // GoF Builder
         this.uiService = new UiService.Builder()
-                                .comJogo(jogo)
                                 .comNomeJogador(labelNomeJogador)
                                 .comPontuacao(labelPontuacao)
                                 .comVagoes(labelVagoes)
@@ -62,8 +67,8 @@ public class JogoController {
                                 .comCartasDestinos(vboxCartasObjetivo)
                                 .build();
 
-        this.jogoService = new JogoService(this.jogo, this.uiService);
-        jogoService.adicionaEventoEmRetangulosDeRota(this.painelMapa);
+        this.jogoUIService = new JogoUIService(this.uiService);
+        jogoUIService.adicionaEventoEmRetangulosDeRota(this.painelMapa);
         uiService.atualizaUI();
     }
 }

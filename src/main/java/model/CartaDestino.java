@@ -1,6 +1,6 @@
 package model;
 
-public class CartaDestino extends Carta {
+public class CartaDestino implements Carta {
     private final Cidade origem;
     private final Cidade destino;
     private final int valor;

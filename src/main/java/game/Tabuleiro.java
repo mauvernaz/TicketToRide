@@ -217,21 +217,6 @@ public class Tabuleiro {
         return false;
     }
 
-    private boolean validarSeCidadeXEstaNaRota(Rota r, String nomeCidade, boolean aOuB){
-        if (aOuB){
-            return r.getCidadeA().getNome().equalsIgnoreCase(nomeCidade);
-        }
-        return r.getCidadeB().getNome().equalsIgnoreCase(nomeCidade);
-    }
-
-    private boolean validarSeCidadeAEstaNaRota(Rota r, String nomeCidade){
-        return validarSeCidadeXEstaNaRota(r, nomeCidade, true);
-    }
-
-    private boolean validarSeCidadeBEstaNaRota(Rota r, String nomeCidade){
-        return validarSeCidadeXEstaNaRota(r, nomeCidade, false);
-    }
-
     public List<Rota> buscarRotaNasRotas(String nomeA, String nomeB) {
         List<Rota> rotasEncontradas = new ArrayList<>();
 

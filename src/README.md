@@ -1,6 +1,12 @@
 # Ticket to Ride (Versão Normal)
 
-Implementação digital do  jogoController de tabuleiro **Ticket to Ride (Mapa USA)**, desenvolvida utilizando JavaFX, para matéria de Projeto de Software.
+Implementação digital do  jogo de tabuleiro **Ticket to Ride (Mapa USA)**, desenvolvida utilizando JavaFX, para matéria de Projeto de Software.
+
+##### Conceitos GRASP explorados
+
+##### Conceitos GoF explorados
+- Singleton: As classes `Jogadores`, `Tabuleiro`, e as herdadas de `DeckCartas` fizeram uso de singleton para simplificar...
+
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -13,4 +19,6 @@ Implementação digital do  jogoController de tabuleiro **Ticket to Ride (Mapa U
 
 Siga os passos abaixo para executar a aplicação em seu ambiente local:
 
-1. **Clone o repositório** (ou baixe os arquivos):
+1. **Clone o repositório**
+2. Instale as tecnologias usadas
+3. Execute o comando maven `mvn javafx:run`

@@ -1,6 +1,5 @@
 package game;
 
-import model.Carta;
 import model.CartaVagao;
 import java.util.List;
 
@@ -32,17 +31,12 @@ public class DeckCartasVagao extends DeckCartas<CartaVagao> {
         this.embaralhar();
     }
 
-    // Opcional: Método para reiniciar o singleton se começar um novo jogo
-    public static void reset() {
-        instance = null;
-    }
 
-    public static DeckCartasVagao inicializarCartasEmbaralhadas(){
+    public static void inicializarCartasEmbaralhadas(){
         if(instance == null){
             carregador = new CarregadorDeCartas();
             instance = new DeckCartasVagao(carregador.criarBaralhoCartasVagao());
             instance.embaralhar();
         }
-        return instance;
     }
 }

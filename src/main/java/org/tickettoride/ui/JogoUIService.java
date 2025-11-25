@@ -1,6 +1,5 @@
 package org.tickettoride.ui;
 
-import game.JogoController;
 import game.JogoService;
 import game.Tabuleiro;
 import javafx.scene.Node;
@@ -18,11 +17,9 @@ import java.util.Optional;
 import static org.tickettoride.ui.Utils.mostrarAlerta;
 
 public class JogoUIService {
-    private final JogoController jogoController;
     private final UiService uiService;
 
-    public JogoUIService(JogoController jogoController, UiService uiService){
-        this.jogoController = jogoController;
+    public JogoUIService(UiService uiService){
         this.uiService = uiService;
     }
 
@@ -61,7 +58,14 @@ public class JogoUIService {
                 return;
             }
         }
-        mostrarAlerta("Cartas Insuficientes", "Você precisa de " + rotas.get(0).getComprimento() + " cartas da cor " + rotas.get(0).getCor());
+        if(rotas.get(0).getCor() == Cor.CINZA){
+            mostrarAlerta("Cartas Insuficientes", "Você precisa de " + rotas.get(0).getComprimento() + " cartas da mesma cor!");
+        } else if (rotas.size() == 2){
+            mostrarAlerta("Cartas Insuficientes", "Você precisa de " + rotas.get(0).getComprimento() + " cartas das cores " + rotas.get(0).getCor() + " ou " + rotas.get(1).getCor());
+        } else{
+            mostrarAlerta("Cartas Insuficientes", "Você precisa de " + rotas.get(0).getComprimento() + " cartas da cor " + rotas.get(0).getCor());
+
+        }
     }
 
     private static String[] parseIdParaObterCidades(String id) {
@@ -147,6 +151,5 @@ public class JogoUIService {
         // Retorna a lista se conseguiu o total, senão retorna null
         return (selecionadas.size() == custo) ? selecionadas : null;
     }
-
 
 }

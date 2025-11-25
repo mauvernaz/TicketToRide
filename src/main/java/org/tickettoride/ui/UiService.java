@@ -1,6 +1,6 @@
 package org.tickettoride.ui;
 
-import game.JogoController;
+import game.CartasAbertas;
 import game.JogoService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -23,9 +23,11 @@ import model.Jogadores;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * GoF : Builder
+ */
 // --- Métodos de UI (atualizarUI, criarImageView) mantidos da versão anterior ---
 public class UiService {
-    private final JogoController jogoController;
     private final Label nomeJogador;
     private final Label pontuacao;
     private final Label vagoes;
@@ -34,7 +36,6 @@ public class UiService {
     private final VBox vboxCartasDestino;
 
     private UiService(Builder builder) {
-        this.jogoController = builder.jogoController;
         this.nomeJogador = builder.nomeJogador;
         this.pontuacao = builder.pontuacao;
         this.vagoes = builder.vagoes;
@@ -44,7 +45,6 @@ public class UiService {
     }
 
     public static class Builder {
-        private JogoController jogoController;
         private Label nomeJogador;
         private Label pontuacao;
         private Label vagoes;
@@ -58,11 +58,6 @@ public class UiService {
 
         public Builder comCartasDestinos(VBox vboxCartasDestino){
             this.vboxCartasDestino = vboxCartasDestino;
-            return this;
-        }
-
-        public Builder comJogo(JogoController jogoController) {
-            this.jogoController = jogoController;
             return this;
         }
 
@@ -146,9 +141,9 @@ public class UiService {
         btnDeck.setOnAction(e -> { JogoService.executarAcaoComprarCartaDeck(); atualizaUI(); });
         this.hboxMesa.getChildren().add(btnDeck);
 
-        for(int i = 0; i< jogoController.getCartasAbertas().size(); i++) {
+        for(int i = 0; i< CartasAbertas.getInstance().getCartas().size(); i++) {
             final int idx = i;
-            ImageView img = criarImageView(jogoController.getCartasAbertas().get(i));
+            ImageView img = criarImageView(CartasAbertas.getInstance().getCartas().get(i));
             img.setOnMouseClicked(e -> { JogoService.executarAcaoComprarCartaAberta(idx); atualizaUI(); });
             this.hboxMesa.getChildren().add(img);
         }

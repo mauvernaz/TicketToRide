@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * GRASP - Information Expert
+ */
 public class Jogador {
     private final String nome;
     private final Cor corMarcador;
@@ -42,9 +45,7 @@ public class Jogador {
         this.maoDeDestino.addAll(objetivos);
     }
 
-    /**
-     * GRASP - Information Expert
-     */
+
     public boolean podeReivindicarRota(Rota rota, List<CartaVagao> pagamento) {
         if (this.estoqueVagoes < rota.getComprimento()) {
             return false;

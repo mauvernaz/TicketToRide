@@ -1,6 +1,6 @@
 package org.tickettoride.ui;
 
-import game.JogoController;
+import game.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -9,16 +9,17 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
+import static game.JogoService.inicializarJogadores;
+
 
 /**
      GRASP: Controller
-     Lógica de negócio da interface do Jogo. Integração com Front em alto nível.
-    Atributos e métodos com o decorator @FXML interagem diretamente com o front (org/tickettoride/ui/jogo.fxml)
+     Lógica de negócio da interface do Jogo. Integração Back-Front em alto nível.
+     Atributos e métodos com o decorator @FXML interagem diretamente com o front (org/tickettoride/ui/jogo.fxml)
  */
 public class JogoUIController {
 
 
-    private JogoController jogoController;
 
     @FXML
     private VBox vboxCartasObjetivo;
@@ -48,13 +49,16 @@ public class JogoUIController {
 
     @FXML
     public void initialize() {
+        Tabuleiro.getInstance("mapa/america.txt");
+        DeckCartasVagao.inicializarCartasEmbaralhadas();
+        CartasAbertas.getInstance();
+
         List<String> nomes = List.of("Jogador 1", "Jogador 2");
+        inicializarJogadores(nomes);
 
-        this.jogoController = new JogoController(nomes);
+        JogoService.setJogadorAtual(0);
 
-        // GoF Builder
         this.uiService = new UiService.Builder()
-                                .comJogo(jogoController)
                                 .comNomeJogador(labelNomeJogador)
                                 .comPontuacao(labelPontuacao)
                                 .comVagoes(labelVagoes)
@@ -63,7 +67,7 @@ public class JogoUIController {
                                 .comCartasDestinos(vboxCartasObjetivo)
                                 .build();
 
-        this.jogoUIService = new JogoUIService(this.jogoController, this.uiService);
+        this.jogoUIService = new JogoUIService(this.uiService);
         jogoUIService.adicionaEventoEmRetangulosDeRota(this.painelMapa);
         uiService.atualizaUI();
     }

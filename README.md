@@ -24,4 +24,11 @@ Siga os passos abaixo para executar a aplicação em seu ambiente local:
 
 1. **Clone o repositório**
 2. Instale as tecnologias usadas
-3. Execute o comando maven `mvn javafx:run`
+3. Compile e baixe as dependências com o Maven:
+   ```bash
+   mvn clean install
+   ```
+4. Inicie a aplicação:
+   ```bash
+   mvn javafx:run
+   ```
